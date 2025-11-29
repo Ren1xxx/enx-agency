@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Enx Agency</title>
+
+  <style>
+    /* ----------------------------- */
+    /* ГЛАВНЫЕ ПЕРЕМЕННЫЕ СТИЛЕЙ     */
+    /* ----------------------------- */
+    :root{
+      --bg:#0f1113;                  /* основной фон */
+      --panel-bg: rgba(255,255,255,0.06);
+      --panel-border: rgba(255,255,255,0.08);
+      --glass-blur: 14px;
+      --accent: rgba(255,255,255,0.85);
+      --muted: rgba(255,255,255,0.45);
+      --shadow: 0 10px 30px rgba(2,6,23,0.6);
+      --cursor-glow: rgba(255,255,255,0.12);
+      font-family: -apple-system, "SF Pro Rounded", "Segoe UI", Roboto, Arial;
+    }
+    @font-face {
+      font-family: 'SF Pro Rounded';
+      src: url('SF-Pro-Rounded.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: auto;
+      letter-spacing: 1.5px;
+    }
+
+    /* Применяем ко всему сайту */
+    body, h1, h2, h3, h4, h5, h6, p, input, textarea, button {
+      font-family: 'SF Pro Rounded';
+      letter-spacing: 2px;
+    }
+
+
+    html, body{
+      height:100%;margin:0;padding:0;
+      background:linear-gradient(180deg,#0e0d0d 0%, #101518 100%);
+      color:var(--accent);
+      overflow:hidden; /* чтобы слайды щёлкали точно */
+    }
+    /* ПАРАЛЛАКС */
+    body::before{
+      content:"";
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background-image:linear-gradient(180deg, rgba(10,11,12,0.7), rgba(20,20,22,0.6)), url('https://images.unsplash.com/photo-1520975917401-5b0b9d2d2f7b?auto=format&fit=crop&w=1600&q=40');
+      background-size:cover;background-position:center;
+      opacity:0.18; /* тонкий вид, чтобы панели читались на переднем плане */
+      z-index:-2;
+      transform:translateY(var(--parallax,0px));
+      transition:transform .25s ease-out;
+      filter:grayscale(20%) contrast(90%);
+    }
+    body::after{
+      content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(8,9,10,0.6);z-index:-1;pointer-events:none;
+    }
+    /* ----------------------------- */
+    /* ОБЛАСТЬ СЛАЙДОВ                */
+    /* ----------------------------- */
+    .slides{
+      height:100vh;
+      width:100vw;
+      display:flex;
+      flex-direction:column;
+      overflow-y:scroll;
+      scroll-snap-type:y mandatory;
+      scroll-behavior:smooth;
+    }
+
+    .slide{
+      min-height:100vh;
+      scroll-snap-align:start;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:6vh 6vw;
+      box-sizing:border-box;
+      position:relative;
+      opacity:1;
+    }
+
+
+
+    /* ----------------------------- */
+    /* LIQUID GLASS ПАНЕЛЬ           */
+    /* ----------------------------- */
+    .panel{
+      width:min(1100px,96%);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid var(--panel-border);
+      box-shadow:var(--shadow);
+      padding:48px;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter:blur(var(--glass-blur));
+      -webkit-backdrop-filter:blur(var(--glass-blur));
+      transition:opacity .5s ease;
+    }
+
+    
+    /* CTA КНОПКА */
+    .cta{
+      padding:14px 26px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:14px;
+      color:white;
+      font-size:15px;
+      cursor:pointer;
+      font-weight:600;
+      backdrop-filter:blur(8px);
+      transition:0.3s;
+    }
+    .cta:hover{
+      background:rgba(255,255,255,0.15);
+      transform:translateY(-2px);
+    }
+
+
+
+    /* ----------------------------- */
+    /* ЗАГОЛОВКИ И ТЕКСТ              */
+    /* ----------------------------- */
+    h1{ font-size:42px; margin:0 0 42px 0; font-weight:700; }
+    .lead{ font-size:16px; color:var(--muted); margin-bottom:10px; }
+
+
+    /* ----------------------------- */
+    /* УСЛУГИ                        */
+    /* ----------------------------- */
+    .services{
+      display:flex;
+      gap:16px;
+      overflow:hidden;
+      flex-wrap:nowrap;
+    }
+
+    .service{
+      min-width:1048px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.05);
+      padding:25px;
+      border-radius:16px;
+      flex-shrink:0;
+      
+    }
+
+    /* цикличная горизонтальная лента */
+    .services-wrapper,
+    .cases-wrapper{
+      
+      position:relative;
+      width:100%;
+    }
+
+    .services-track,
+    #casesTrack {
+      display: flex;
+      gap: 16px;
+      transition: transform .7s;
+      /* изначально без маски, маска будет ставиться через JS */
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    
+
+
+
+    .carousel-arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:5;
+
+      width:42px;
+      height:42px;
+      border-radius:50%;
+
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.2);
+      backdrop-filter:blur(8px);
+
+      color:white;
+      font-size:26px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      cursor:pointer;
+      transition:0.25s;
+    }
+
+    .carousel-arrow:hover{
+      background:rgba(255,255,255,0.18);
+      transform:translateY(-50%) scale(1.1);
+    }
+
+    .carousel-arrow.left{
+      left:0;
+    }
+
+    .carousel-arrow.right{
+      right:0;
+    }
+
+
+
+
+
+    .brand{font-weight:700;margin-bottom:8px;}
+
+    /* ----------------------------- */
+    /* КОНТАКТНАЯ ФОРМА               */
+    /* ----------------------------- */
+    .contact-form{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.05);
+      padding:18px;
+      border-radius:12px;
+    }
+
+    .contact-form input,
+    .contact-form textarea{
+      width:97,5%;
+      padding:12px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.07);
+      color:white;
+      font-size:14px;
+      resize:none;
+    }
+
+    .contact-form button{
+      padding:12px 18px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);
+      cursor:pointer;
+      color:white;
+      font-weight:600;
+    }
+
+
+
+    /* ----------------------------- */
+    /* АДАПТИВ                       */
+    /* ----------------------------- */
+    @media(max-width:900px){
+      .panel{padding:28px;}
+      h1{font-size:30px;}
+      .lead{font-size:14px;}
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="slides" id="slides">
+
+  <!-- ------------------------- -->
+  <!-- СЛАЙД 1: ГЛАВНАЯ          -->
+  <!-- ------------------------- -->
+  <section class="slide active" data-index="0">
+    <div class="panel">
+      <h1>Enx Agency</h1>
+      <div class="lead">Рекламное агентство нового уровня.</div>
+
+      <p style="max-width:520px;color:var(--muted);margin-bottom:24px;">
+        Мы создаём кампании, которые запоминаются.
+      </p>
+
+      <!-- кнопка перехода к форме -->
+      <button class="cta" onclick="goToSlide(3)">Связаться</button>
+    </div>
+  </section>
+
+
+  <!-- ------------------------- -->
+  <!-- СЛАЙД 2: УСЛУГИ           -->
+  <!-- ------------------------- -->
+  <section class="slide" data-index="1">
+    <div class="panel">
+      <h1>Что мы предлагаем</h1>
+
+      <div class="services-wrapper">
+        <div class="blur-edge left"></div>
+        <div class="blur-edge right"></div>
+        <button class="carousel-arrow left" onclick="scrollTrackLeft('servicesTrack')">‹</button>
+        <button class="carousel-arrow right" onclick="scrollTrackRight('servicesTrack')">›</button>
+        <div class="services-track" id="servicesTrack">
+          <div class="service"><h3>Брендинг</h3><p><p>Создаём логотип, фирменный стиль и визуальную идентичность для вашего бизнеса.</p></div>
+          <div class="service"><h3>Таргетинг</h3><p>Разрабатываем рекламные кампании в сети, чтобы привлекать новых клиентов.</p></div>
+          <div class="service"><h3>SMM</h3><p>Ведем страницы в соцсетях, пишем посты и общаемся с вашей аудиторией.</p></div>
+          <div class="service"><h3>Аналитика</h3><p>Отслеживаем эффективность рекламы и действий в интернете, чтобы улучшать наши результаты.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ------------------------- -->
+  <!-- СЛАЙД 3: КЕЙСЫ           -->
+  <!-- ------------------------- -->
+  <section class="slide" data-index="2">
+    <div class="panel">
+      <h1>Наши кейсы</h1>
+      <div class="services-wrapper">
+
+        <button class="carousel-arrow left" onclick="scrollTrackLeft('casesTrack')">‹</button>
+        <button class="carousel-arrow right" onclick="scrollTrackRight('casesTrack')">›</button>
+        <div class="services-track" id="casesTrack">
+          <div class="service"><div class="brand">Nike</div><p>Создали рекламную кампанию с динамичными видео и яркими баннерами, привлекли новую аудиторию</p></div>
+          <div class="service"><div class="brand">Adidas</div><p>Запустили онлайн-продвижение нового продукта, увеличили продажи через соцсети.</p></div>
+          <div class="service"><div class="brand">Reebok</div><p>Разработали стильный визуальный контент и промо-материалы для сайта и Instagram.</p></div>
+          <div class="service"><div class="brand">Kappa</div><p>Создали лендинг и графику для кампании, чтобы бренд выглядел современно и привлекательно.</p></div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ------------------------- -->
+  <!-- СЛАЙД 4: КОНТАКТНАЯ ФОРМА -->
+  <!-- ------------------------- -->
+  <section class="slide" data-index="3">
+    <div class="panel">
+      <h1>Связаться с нами</h1>
+
+      <form class="contact-form" onsubmit="event.preventDefault(); alert('Спасибо! Мы свяжемся с вами.');">
+        <input type="text" placeholder="Ваше имя" required>
+        <input type="email" placeholder="Email" required>
+        <textarea rows="4" placeholder="Сообщение"></textarea>
+        <button>Отправить</button>
+      </form>
+
+    </div>
+  </section>
+</div>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<script>
+/* ------------------------------------------------------- */
+/* ПЕРЕКЛЮЧЕНИЕ СЛАЙДОВ                                    */
+/* ------------------------------------------------------- */
+const slides = [...document.querySelectorAll('.slide')];
+let current = 0;
+
+function goToSlide(i){
+  i = Math.max(0, Math.min(slides.length-1, i));
+  current = i;
+  slides[i].scrollIntoView({behavior:'smooth'});
+
+  slides.forEach(s=>s.classList.remove('active'));
+  slides[i].classList.add('active');
+}
+
+/* колесо мыши */
+let lock = false;
+window.addEventListener('wheel', e=>{
+  if(lock) return;
+  lock = true;
+  setTimeout(()=>lock=false, 700);
+
+  if(e.deltaY>0) goToSlide(current+1);
+  else goToSlide(current-1);
+});
+
+/* клавиши */
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowDown') goToSlide(current+1);
+  if(e.key==='ArrowUp') goToSlide(current-1);
+});
+
+/* ПАРАЛЛАКС: двигаем фон чуть-чуть при скролле */
+const slidesEl = document.getElementById('slides');
+slidesEl.addEventListener('scroll', ()=>{
+  const pct = slidesEl.scrollTop / (slidesEl.scrollHeight - slidesEl.clientHeight);
+  // параллакс легко меняется: умножаем на небольшое число
+  document.documentElement.style.setProperty('--parallax', `${pct * 40}px`);
+});
+
+
+/* ------------------------------------------------------- */
+/* ЦИКЛИЧНАЯ ЛЕНТА УСЛУГ                                   */
+/* ------------------------------------------------------- */
+/* Универсальная функция */
+function setupLoopCarousel(trackId, gap = 16, speed = 2500){
+  const track = document.getElementById(trackId);
+  if(!track) return;
+
+  const items = [...track.children];
+  const w = items[0].offsetWidth + gap;
+
+  // клонируем первые и последние элементы для бесконечного эффекта
+  items.forEach(item => track.appendChild(item.cloneNode(true)));
+  items.slice().reverse().forEach(item => track.insertBefore(item.cloneNode(true), track.firstChild));
+
+  let index = items.length; // начинаем с оригинальной первой карточки
+  let animating = false;
+
+  function updateTrack(){
+    track.style.transition = animating ? 'transform 0.7s' : 'none';
+    track.style.transform = `translateX(${-index * w}px)`;
+    track.dataset.pos = index;
+  }
+
+  function scrollLeft(){
+    if(animating) return;
+    animating = true;
+    index--;
+    updateTrack();
+    setTimeout(() => {
+      if(index < items.length){
+        index += items.length;
+        animating = false;
+        updateTrack();
+      } else animating = false;
+    }, 700);
+  }
+
+  function scrollRight(){
+    if(animating) return;
+    animating = true;
+    index++;
+    updateTrack();
+    setTimeout(() => {
+      if(index >= items.length * 2){
+        index -= items.length;
+        animating = false;
+        updateTrack();
+      } else animating = false;
+    }, 700);
+  }
+
+  function autoScroll(){
+    scrollRight();
+    setTimeout(autoScroll, speed);
+  }
+
+  // кнопки
+  const leftBtn = track.parentElement.querySelector('.carousel-arrow.left');
+  const rightBtn = track.parentElement.querySelector('.carousel-arrow.right');
+  if(leftBtn) leftBtn.addEventListener('click', scrollLeft);
+  if(rightBtn) rightBtn.addEventListener('click', scrollRight);
+
+  autoScroll();
+}
+
+// инициализация
+setupLoopCarousel("servicesTrack", 16, 4000);
+setupLoopCarousel("casesTrack", 16, 4000);
+
+
+</script>
+
+</body>
+</html>
